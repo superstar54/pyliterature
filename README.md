@@ -1,5 +1,5 @@
 ###pyliterature
-A Pythonic wrapper for the scientific journal, including Nature, Science, ScienceDirect, Wiley, ACS publication, RSC publication and so on.
+A Python web wrapper and text mining package for the scientific journal, including Nature, Science, ScienceDirect, Wiley, ACS publication, RSC publication and so on.
 
 
 
@@ -10,11 +10,11 @@ A Pythonic wrapper for the scientific journal, including Nature, Science, Scienc
 
 ###Dependencies
 
-* Python >=26
+* Python >=27
 * spynner
-* BeautifulSoup
+* beautifulsoup4
 * nltk
-* PyQt > 443
+
 
 
 ####Examples
@@ -24,8 +24,11 @@ A Pythonic wrapper for the scientific journal, including Nature, Science, Scienc
 >>> url = 'http://www.nature.com/nature/journal/v541/n7635/full/nature20782.html'
 >>> keyword = 'DFT'
 >>> liter = Pyliterature(url, keyword)
+>>> liter.parser()
 >>> liter.text
->>> liter.keysents
+>>> for sent in liter.keysents:
+...    print(sent)
+...
 ```
 
 If you want to add features/improvement or report issues, feel free to send a pull request!
@@ -33,4 +36,5 @@ If you want to add features/improvement or report issues, feel free to send a pu
 
 ###TODO
 * read bib list
+* determine sentence from which article
 
