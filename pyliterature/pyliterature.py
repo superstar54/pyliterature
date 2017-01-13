@@ -1,4 +1,9 @@
+# encoding=utf8  
 from __future__ import print_function
+
+import sys  
+reload(sys)  
+sys.setdefaultencoding('utf8')
 """
 This module defines an module to fetch article text from
 scientific journal.
@@ -24,8 +29,9 @@ class Pyliterature():
     Class for Pyliterature parser
     """
 
-    def __init__(self, url, keyword = None):
+    def __init__(self, url=None, keyword = None):
         self.text = ''
+        self.url_list = []
         self.keysents = ''
         self.url = url
         self.keyword = keyword
@@ -40,16 +46,58 @@ class Pyliterature():
             'wiley':self.parse_wiley
             }
 
-        parser = self.check_journal()
-        html = self.load_html()
-        self.text = parser(html)
+
+    def read_database(self, filename):
+        """
+        load(html) is very slow, it's better to read text in a database
+        """
+        self.database = filename
+
+        if not os.path.exists('{0}'.format(self.database)):
+            os.mkdir('{0}'.format(self.database))
+            open('{0}/text.dat'.format(self.database), 'w').close()
+            open('{0}/url_list.dat'.format(self.database), 'w').close()
+            return
+        # read url list
+        with open('{0}/url_list.dat'.format(self.database)) as file:
+            lines = file.read().splitlines() 
+            for line in lines:
+                self.url_list.append(line)
+        file.close()
+        # read text
+        with open('{0}/text.dat'.format(self.database)) as file:
+            lines = file.read().splitlines() 
+            for line in lines:
+                self.text += line
+        file.close()
+
+    def save_database(self):
+        """
+        save all the text and url in a database
+        """
+        with open('{0}/text.dat'.format(self.database), 'w') as file:
+            file.write(self.text)
+            # file.write('\n')
+        file.close()
+        with open('{0}/url_list.dat'.format(self.database), 'w') as file:
+            for url in self.url_list:
+                file.write(url)
+                file.write('\n')
+        file.close()
+
+    def parser(self):
+        if self.url:
+            self.url_list.append(self.url)
+            parser = self.check_journal()
+            html = self.load_html()
+            self.text += parser(html)
 
         # print(text)
         # print('\n\n\n')
 
         #
         if self.keyword:
-            self.keysents = self.phase_keyword(self.text, self.keyword)
+            self.keysents = self.parse_keyword(self.text, self.keyword)
             # for keysent in keysents:
                 # print(keysent)
                 # print('\n')
@@ -176,7 +224,7 @@ class Pyliterature():
                 text += '\n'
         return text 
 
-    def parse_wiley(html):
+    def parse_wiley(self, html):
         '''
         wiley
         '''
@@ -189,11 +237,11 @@ class Pyliterature():
             for par in pars:
                 text += par.get_text()
                 text += '\n'
-        return text 
+        return text
 
     
 
-    def phase_keyword(self, text, keyword):
+    def parse_keyword(self, text, keyword):
         import nltk
         from nltk.tokenize import sent_tokenize
         sents = sent_tokenize(text)
@@ -228,4 +276,4 @@ if __name__ == "__main__":
 
 
     keyword = 'CALPHAD'
-    mypyli = Pyliterature(url, keyword)
+    liter = Pyliterature(url, keyword)

@@ -4,7 +4,7 @@ A Pythonic wrapper for the scientific journal, including Nature, Science, Scienc
 
 
 ###Author
-* Xing Wang <xing.wang@psi.ch>
+* Xing Wang  <xingwang1991@gmail.com>
 
 
 
@@ -32,7 +32,5 @@ If you want to add features/improvement or report issues, feel free to send a pu
 
 
 ###TODO
-* read url list
-* save text as database
 * read bib list
 
