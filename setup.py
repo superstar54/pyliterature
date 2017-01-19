@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='pyliterature',
-    version='0.1.3',
+    version='0.1.4',
     description='A Python web wrapper and text mining package for the scientific journal, including Nature, Science, ScienceDirect, Wiley, ACS publication, RSC publication and so on.',
 
     author='Xing Wang',

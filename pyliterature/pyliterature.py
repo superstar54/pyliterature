@@ -20,7 +20,7 @@ import sys
 
 WEB_SITE = [
     "nature", "science", "sciencedirect", "acs",
-    "rsc", "wiley"
+    "rsc", "wiley", "none"
 ]
 
 
@@ -31,6 +31,9 @@ class Pyliterature():
 
     def __init__(self, url=None, keyword = None):
         self.text = ''
+        self.doi = None
+        self.database = None
+
         self.url_list = []
         self.keysents = ''
         self.url = url
@@ -43,7 +46,8 @@ class Pyliterature():
             'sciencedirect':self.parse_sciencedirect,
             'acs':self.parse_acs,
             'rsc':self.parse_rsc,
-            'wiley':self.parse_wiley
+            'wiley':self.parse_wiley,
+            'none':None,
             }
 
 
@@ -75,6 +79,13 @@ class Pyliterature():
         """
         save all the text and url in a database
         """
+        if self.database == None:
+            self.database = self.keyword
+        if not os.path.exists('{0}'.format(self.database)):
+            os.mkdir('{0}'.format(self.database))
+            open('{0}/text.dat'.format(self.database), 'w').close()
+            open('{0}/url_list.dat'.format(self.database), 'w').close()
+        #
         with open('{0}/text.dat'.format(self.database), 'w') as file:
             file.write(self.text)
             # file.write('\n')
@@ -89,6 +100,8 @@ class Pyliterature():
         if self.url:
             self.url_list.append(self.url)
             parser = self.check_journal()
+            if not parser:
+                return 0
             html = self.load_html()
             self.text += parser(html)
 
@@ -123,6 +136,7 @@ class Pyliterature():
         elif 'wiley' in self.url:
             journal = 'wiley'
         else:
+            journal = 'none'
             print('Unrecognized journal. \n \
                 We only support {0}'.format(WEB_SITE))  
 
@@ -252,28 +266,12 @@ class Pyliterature():
         return keysents
 
 
-if __name__ == "__main__":
-    # science
-    # url = 'http://science.sciencemag.org/content/355/6320/49.full'
 
+if __name__ == "__main__":
     # nature
     # url = 'http://www.nature.com/nature/journal/v541/n7635/full/nature20782.html'
 
     # sciencedirect
     url = 'http://www.sciencedirect.com/science/article/pii/S1751616116301138'
-
-    # ACS catalysis
-    # url = 'http://pubs.acs.org/doi/full/10.1021/acscatal.6b02960'
-
-    # ACS JACS
-    # url = 'http://pubs.acs.org/doi/full/10.1021/jacs.6b10984'
-
-    # RSC PCCP
-    # url = 'http://pubs.rsc.org/en/content/articlehtml/2017/cp/c6cp08110j'
-
-    # Wiley ange
-    # url = 'http://onlinelibrary.wiley.com/doi/10.1002/ange.201503022/full'
-
-
     keyword = 'CALPHAD'
     liter = Pyliterature(url, keyword)
