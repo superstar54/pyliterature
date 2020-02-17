@@ -18,7 +18,7 @@ A Python web wrapper and text mining package for the scientific journal, includi
 
 
 #### Examples
-y
+
 ```python
 >>> from pyliterature import Pyliterature
 >>> url = 'http://www.nature.com/nature/journal/v541/n7635/full/nature20782.html'
