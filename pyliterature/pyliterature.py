@@ -2,7 +2,8 @@
 from __future__ import print_function
 
 import sys  
-reload(sys)  
+import importlib
+importlib.reload(SYS)
 sys.setdefaultencoding('utf8')
 """
 This module defines an module to fetch article text from
