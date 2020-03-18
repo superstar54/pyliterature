@@ -1,14 +1,14 @@
-###pyliterature
+### pyliterature
 A Python web wrapper and text mining package for the scientific journal, including Nature, Science, ScienceDirect, Wiley, ACS publication, RSC publication and so on.
 
 
 
-###Author
+### Author
 * Xing Wang  <xingwang1991@gmail.com>
 
 
 
-###Dependencies
+### Dependencies
 
 * Python3
 * selenium
@@ -17,7 +17,7 @@ A Python web wrapper and text mining package for the scientific journal, includi
 
 
 
-####Examples
+#### Examples
 
 ```python
 from pyliterature import Pyliterature
@@ -33,7 +33,7 @@ for keysent in liter.keysents:
 If you want to add features/improvement or report issues, feel free to send a pull request!
 
 
-###TODO
+### TODO
 * read bib list
 * determine sentence from which article
 
