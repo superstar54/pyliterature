@@ -1,35 +1,34 @@
-# encoding=utf8  
-from __future__ import print_function
-
-import sys  
-reload(sys)  
-sys.setdefaultencoding('utf8')
+#-*- coding: utf-8 -*-
 """
 This module defines an module to fetch article text from
 scientific journal.
 
 Author: Xing Wang <xingwang1991@gmail.com>
 """
-import spynner  
 import os  
-import urllib  
 from bs4 import BeautifulSoup
 import time
-import re
-import sys
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+options = Options()
+options.headless = True
+
 
 WEB_SITE = [
     "nature", "science", "sciencedirect", "acs",
     "rsc", "wiley", "none"
 ]
 
-
 class Pyliterature():
     """
     Class for Pyliterature parser
     """
 
-    def __init__(self, url=None, keyword = None):
+    def __init__(self, url=None, keyword = None, wait = 0):
         self.text = ''
         self.doi = None
         self.database = None
@@ -38,7 +37,7 @@ class Pyliterature():
         self.keysents = ''
         self.url = url
         self.keyword = keyword
-        self.wait = 0
+        self.wait = wait
 
         self.PARSER = {
             'nature':self.parse_nature,
@@ -103,10 +102,9 @@ class Pyliterature():
             if not parser:
                 return 0
             html = self.load_html()
-            self.text += parser(html)
-
-        # print(text)
-        # print('\n\n\n')
+            soup = BeautifulSoup(html, "lxml")
+            text = parser(soup)
+            self.text += text
 
         #
         if self.keyword:
@@ -148,28 +146,20 @@ class Pyliterature():
         """
         load html using spynner
         """
-        #
-        browser = spynner.Browser()
-        #
-        browser.hide()
-        # browser.show()
-        try:
-            browser.load(self.url, load_timeout=300)
-            browser.wait(self.wait)
-            html = browser.html
-        except spynner.SpynnerTimeout:
-            html = None
-        else:
-            html = browser.html
-        browser.close()
-        return html 
+        driver = webdriver.Firefox(options = options)
+        driver.get(self.url)
+        print('waiting for page...')
+        time.sleep(self.wait)
+        page_source = driver.page_source
+        driver.close()
+
+        return page_source 
     
 
-    def parse_nature(self, html):
+    def parse_nature(self, soup):
         '''
         nature
         '''
-        soup = BeautifulSoup(html, from_encoding='utf8')
         #
         text = ''
         contents = soup.find_all('div', {'class':"content"})
@@ -180,11 +170,10 @@ class Pyliterature():
                 text += '\n'
         return text 
 
-    def parse_science(self, html):
+    def parse_science(self, soup):
         '''
         science
         '''
-        soup = BeautifulSoup(html, from_encoding='utf8')
         #
         text = ''
         contents = soup.find_all('div', {'class':"article fulltext-view "})
@@ -195,26 +184,27 @@ class Pyliterature():
                 text += '\n'
         return text 
 
-    def parse_sciencedirect(self, html):
+    def parse_sciencedirect(self, soup):
         '''
         sciencedirect
         '''
-        soup = BeautifulSoup(html, from_encoding='utf8')
+        # print(soup)
         #
         text = ''
-        contents = soup.find_all('div', {'class':'page_fragment'})
+        contents = soup.find_all('div', {'class':'Body u-font-serif'})
+        # print(contents)
         for content in contents:
             pars = content.find_all('p')
             for par in pars:
                 text += par.get_text()
                 text += '\n'
+        # print(text)
         return text 
 
-    def parse_acs(self, html):
+    def parse_acs(self, soup):
         '''
         acs
         '''
-        soup = BeautifulSoup(html, from_encoding='utf8')
         #
         text = ''
         contents = soup.find_all('div', {'class':'NLM_p'})
@@ -223,11 +213,10 @@ class Pyliterature():
             text += '\n'
         return text 
 
-    def parse_rsc(self, html):
+    def parse_rsc(self, soup):
         '''
         rsc
         '''
-        soup = BeautifulSoup(html, from_encoding='utf8')
         #
         text = ''
         contents = soup.find_all('div', {'id':'wrapper'})
@@ -238,11 +227,10 @@ class Pyliterature():
                 text += '\n'
         return text 
 
-    def parse_wiley(self, html):
+    def parse_wiley(self, soup):
         '''
         wiley
         '''
-        soup = BeautifulSoup(html, from_encoding='utf8')
         #
         text = ''
         contents = soup.find_all('article', {'id':'main-content'})
@@ -270,8 +258,13 @@ class Pyliterature():
 if __name__ == "__main__":
     # nature
     # url = 'http://www.nature.com/nature/journal/v541/n7635/full/nature20782.html'
-
     # sciencedirect
     url = 'http://www.sciencedirect.com/science/article/pii/S1751616116301138'
+    # url = 'http://pubs.acs.org/doi/full/10.1021/jz5009483'
     keyword = 'CALPHAD'
     liter = Pyliterature(url, keyword)
+    liter.parser()
+    # print(liter.text)
+    for keysent in liter.keysents:
+        print(keysent)
+        print('\n')

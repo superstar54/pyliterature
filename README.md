@@ -10,8 +10,8 @@ A Python web wrapper and text mining package for the scientific journal, includi
 
 ###Dependencies
 
-* Python >=27
-* spynner
+* Python3
+* selenium
 * beautifulsoup4
 * nltk
 
@@ -20,15 +20,14 @@ A Python web wrapper and text mining package for the scientific journal, includi
 ####Examples
 
 ```python
->>> from pyliterature import Pyliterature
->>> url = 'http://www.nature.com/nature/journal/v541/n7635/full/nature20782.html'
->>> keyword = 'DFT'
->>> liter = Pyliterature(url, keyword)
->>> liter.parser()
->>> liter.text
->>> for sent in liter.keysents:
-...    print(sent)
-...
+from pyliterature import Pyliterature
+url = 'http://www.nature.com/nature/journal/v541/n7635/full/nature20782.html'
+keyword = 'DFT'
+liter = Pyliterature(url, keyword)
+liter.parser()
+for keysent in liter.keysents:
+    print(keysent)
+    print('\n')
 ```
 
 If you want to add features/improvement or report issues, feel free to send a pull request!

@@ -9,7 +9,7 @@ liter = Pyliterature(url, keyword)
 liter.parser()
 
 print('=================article text==================================')
-print(liter.text)
+# print(liter.text)
 
 print('=================key sentences==================================')
 for keysent in liter.keysents:
